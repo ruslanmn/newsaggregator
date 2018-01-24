@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="application.SearchController"
+            prefHeight="641.0"
+            prefWidth="624.0"
+>
+   <children>
+      <TextField
+              fx:id="searchText"
+              prefHeight="33.0"
+              focusTraversable="false"
+              promptText="Введите ключевые слова"
+              AnchorPane.leftAnchor="20"
+              AnchorPane.topAnchor="10"
+              AnchorPane.rightAnchor="20"
+      />
+
+      <Button
+              onAction="#handleSearchButtonAction"
+              text="Поиск" AnchorPane.leftAnchor="20"
+              AnchorPane.topAnchor="50"
+      />
+
+      <ListView fx:id="searchResultsListView"
+                AnchorPane.leftAnchor="20"
+                AnchorPane.rightAnchor="20"
+                AnchorPane.topAnchor="100"
+                AnchorPane.bottomAnchor="20"
+      />
+   </children>
+</AnchorPane>
