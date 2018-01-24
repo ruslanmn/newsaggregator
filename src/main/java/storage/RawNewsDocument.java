@@ -17,11 +17,11 @@ public class RawNewsDocument {
     }
 
     public void loadAndStore(String dir) throws IOException {
-        String docFilePath = dir + "/" + title + ".txt";
+        String docFilePath = dir + "/" + title.hashCode() + ".txt";
 
         if(! new File(docFilePath).isFile()) {
             String content = URLLoader.loadContentByUrl(link);
-            FileUtils.writeStringToFile(new File(docFilePath), content, Charset.defaultCharset());
+            FileUtils.writeStringToFile(new File(docFilePath), title + "\n" + content, Charset.defaultCharset());
             System.out.println(title + " loaded and saved");
         }
     }

@@ -21,14 +21,18 @@ public class NewsDocument {
     public NewsDocument(String title, String url) throws IOException {
         this.title = title;
         Document doc = Jsoup.connect(url).get();
+        loadContent(doc);
     }
 
     public NewsDocument(File newsFile) throws IOException {
-        this(FilenameUtils.getBaseName(newsFile.getName()), Jsoup.parse(FileUtils.readFileToString(newsFile)));
+        String docStr = FileUtils.readFileToString(newsFile);
+        int newLineInd = docStr.indexOf("\n");
+        this.title = docStr.substring(0, newLineInd);
+        String content = docStr.substring(newLineInd + 1);
+        loadContent(Jsoup.parse(content));
     }
 
-    public NewsDocument(String title, Document doc) {
-        this.title = title;
+    private void loadContent(Document doc) {
         doc.select("a").remove();
         wordsOccurrences = DocumentPreparer.parseContent(doc.toString() + " " + title);
 
