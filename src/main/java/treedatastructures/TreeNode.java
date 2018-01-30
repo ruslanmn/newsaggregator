@@ -10,6 +10,11 @@ public class TreeNode<T> {
     T value;
     List<TreeNode<T>> children;
 
+    public TreeNode() {
+        children = new LinkedList<>();
+    }
+
+
     public TreeNode(T value) {
         this.value = value;
         children = new LinkedList<>();

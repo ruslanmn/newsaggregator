@@ -1,11 +1,12 @@
 package documentsdatastructures;
 
 import documentpreparing.DocumentPreparer;
+import lombok.Getter;
 import org.apache.commons.collections4.MultiSet;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import storage.sourceparsers.SourceParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,25 +17,29 @@ public class NewsDocument {
     String title;
     MultiSet<String> wordsOccurrences;
 
+    @Getter
+    String content;
+
     double vectorLength;
 
     public NewsDocument(String title, String url) throws IOException {
         this.title = title;
         Document doc = Jsoup.connect(url).get();
-        loadContent(doc);
     }
 
-    public NewsDocument(File newsFile) throws IOException {
-        String docStr = FileUtils.readFileToString(newsFile);
-        int newLineInd = docStr.indexOf("\n");
-        this.title = docStr.substring(0, newLineInd);
-        String content = docStr.substring(newLineInd + 1);
-        loadContent(Jsoup.parse(content));
+    public NewsDocument(File newsFile, SourceParser sourceParser) throws IOException {
+        String newsStr = FileUtils.readFileToString(newsFile);
+        int newLineInd = newsStr.indexOf('\n');
+        String title = newsStr.substring(0, newLineInd);
+        String content = newsStr.substring(newLineInd + 1);
+        loadNewsDocument(title, Jsoup.parse(content), sourceParser);
     }
 
-    private void loadContent(Document doc) {
+    void loadNewsDocument(String title, Document doc, SourceParser sourceParser) {
+        this.title = title;
         doc.select("a").remove();
-        wordsOccurrences = DocumentPreparer.parseContent(doc.toString() + " " + title);
+        this.content = sourceParser.getContent(doc);
+        wordsOccurrences = DocumentPreparer.parseContent(content + "\n" + title);
 
         long n = 0;
 

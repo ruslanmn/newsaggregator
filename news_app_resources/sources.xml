@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sources>
+    <source>
+        <url>http://lenta.ru/rss/news</url>
+        <id>1</id>
+    </source>
+    <source>
+        <url>https://news.rambler.ru/rss/moscow_city/</url>
+        <id>2</id>
+    </source>
+    <source>
+        <url>https://news.rambler.ru/rss/world/</url>
+        <id>3</id>
+    </source>
+    <source>
+        <url>https://news.rambler.ru/rss/incidents/</url>
+        <id>4</id>
+    </source>
+    <source>
+        <url>https://news.rambler.ru/rss/tech/</url>
+        <id>5</id>
+    </source>
+    <source>
+        <url>https://news.rambler.ru/rss/economics/</url>
+        <id>6</id>
+    </source>
+    <source>
+        <url>https://news.rambler.ru/rss/business/</url>
+        <id>7</id>
+    </source>
+    <source>
+        <url>https://news.rambler.ru/rss/markets/</url>
+        <id>8</id>
+    </source>
+    <!--<source>http://fakty.ua/rss_feed/all</source>
+    <source>http://hi-news.ru/feed</source>
+    <source>http://www.mk.ru/rss/index.xml</source>-->
+</sources>

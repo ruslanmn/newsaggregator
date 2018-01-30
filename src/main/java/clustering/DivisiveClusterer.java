@@ -1,22 +1,26 @@
 package clustering;
 
-import treedatastructures.TreeNode;
+import documentprocessing.ClusterResultItem;
+import documentsdatastructures.DocumentVector;
 import org.apache.commons.math3.ml.clustering.CentroidCluster;
-import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
+import treedatastructures.TreeNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class DivisiveClusterer<T extends Clusterable> {
+public class DivisiveClusterer {
 
     double rss;
-    private TreeNode<List<T>> rootNode;
+    private TreeNode<List<ClusterResultItem>> rootNode;
 
 
-    public void cluster(List<T> points,
+    public void cluster(List<DocumentVector> points,
                                       int maxLevel,
                                       int divideSize) {
         rss = 0;
+        if(maxLevel < 1)
+            throw new RuntimeException("Level should be >= 1");
         this.rootNode = cluster(points, 0, maxLevel, divideSize);
         rss /= points.size();
     }
@@ -27,35 +31,40 @@ public class DivisiveClusterer<T extends Clusterable> {
     }
 
 
-    private TreeNode<List<T>> cluster(List<T> points,
+    private TreeNode<List<ClusterResultItem>> cluster(List<DocumentVector> points,
                                          int level,
                                          int maxLevel,
                                          int divideSize) {
-        TreeNode<List<T>> clusterNode = new TreeNode<>(points);
+        TreeNode<List<ClusterResultItem>> clusterNode = new TreeNode<>();
         if((level >= maxLevel) || (points.size() < divideSize))
             return clusterNode;
 
-        KMeansPlusPlusClusterer<T> kMeansPP = new KMeansPlusPlusClusterer<>(divideSize);
-        List<CentroidCluster<T>> centroids = kMeansPP.cluster(points);
-        for(CentroidCluster<T> centroid : centroids) {
+        KMeansPlusPlusClusterer<DocumentVector> kMeansPP = new KMeansPlusPlusClusterer<>(divideSize);
+        List<CentroidCluster<DocumentVector>> centroids = kMeansPP.cluster(points);
+        for(CentroidCluster<DocumentVector> centroid : centroids) {
 
-            List<T> centroidPoints = centroid.getPoints();
+            List<DocumentVector> centroidPoints = centroid.getPoints();
+            List<ClusterResultItem> clusterResultItems = new ArrayList<>(centroidPoints.size());
 
             // compute rss for centroid
-            for(T point : centroidPoints) {
+            for(DocumentVector point : centroidPoints) {
                 double dist = kMeansPP.getDistanceMeasure().compute(point.getPoint(), centroid.getCenter().getPoint());
                 rss += dist*dist;
+
+                ClusterResultItem clusterResultItem = new ClusterResultItem(point.getDocument(), dist);
+                clusterResultItems.add(clusterResultItem);
             }
 
-            TreeNode<List<T>> subClusterNode = cluster(centroidPoints,
+            TreeNode<List<ClusterResultItem>> subClusterNode = cluster(centroidPoints,
                     level + 1, maxLevel, divideSize);
+            subClusterNode.setValue(clusterResultItems);
             clusterNode.add(subClusterNode);
         }
 
         return clusterNode;
     }
 
-    public TreeNode<List<T>> getRootNode() {
+    public TreeNode<List<ClusterResultItem>> getRootNode() {
         return rootNode;
     }
 }

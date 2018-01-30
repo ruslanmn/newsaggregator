@@ -1,6 +1,7 @@
 package application;
 
 import documentprocessing.DocumentProcessor;
+import documentsdatastructures.NewsDocument;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,6 +12,7 @@ import storage.DocumentLoader;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.List;
 
 public class NewsAggregatorApp extends Application {
 
@@ -30,18 +32,17 @@ public class NewsAggregatorApp extends Application {
 
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) throws IOException, ParserConfigurationException, SAXException {
         app = this;
         documentProcessor = new DocumentProcessor();
-        documentProcessor.addAll(DocumentLoader.loadNewsDocuments());
-
-
+        List<NewsDocument> newsDocuments = DocumentLoader.loadNewsDocuments();
+        documentProcessor.addAll(newsDocuments);
 
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(is_search_mode ? searchPage : clusterPage));
 
         Scene scene = new Scene(root);
 
-        primaryStage.setTitle("News Aggregator");
+        primaryStage.setTitle("News Aggregator: " + newsDocuments.size() + " news");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

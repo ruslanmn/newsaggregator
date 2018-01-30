@@ -1,5 +1,6 @@
 package application;
 
+import documentprocessing.ClusterResultItem;
 import documentsdatastructures.NewsDocument;
 import documenttagger.ClusterTagger;
 import documenttagger.MutualInformationFactory;
@@ -7,12 +8,13 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ClusterController implements Runnable {
     @FXML
@@ -29,9 +31,22 @@ public class ClusterController implements Runnable {
 
     private boolean clustering;
 
+    Comparator<ClusterResultItem> clusterResultItemComparator;
 
     @FXML
     public void initialize() {
+        clusterResultItemComparator = new Comparator<ClusterResultItem>() {
+            @Override
+            public int compare(ClusterResultItem o1, ClusterResultItem o2) {
+                if(o1.getDistanceFromCentroid() > o2.getDistanceFromCentroid())
+                    return 1;
+                else if (o1.getDistanceFromCentroid() < o2.getDistanceFromCentroid())
+                    return -1;
+                else
+                    return 0;
+            }
+        };
+
         NewsAggregatorApp.app.clusterController = this;
         refreshButton.setText(ButtonModes.ready);
         clustering = false;
@@ -54,20 +69,35 @@ public class ClusterController implements Runnable {
         clustering = true;
 
         clusterSize = clusterSizeSpinner.getValue();
-        Pair<Collection<Collection<NewsDocument>>, Double> clusteringResult = NewsAggregatorApp.app.documentProcessor.clusterize(clusterSize);
+        Pair<List<List<ClusterResultItem>>, Double> clusteringResult = NewsAggregatorApp.app.documentProcessor.clusterize(clusterSize);
 
-        Collection<Collection<NewsDocument>> clusters = clusteringResult.getKey();
+        List<List<ClusterResultItem>> clusters = clusteringResult.getKey();
+
+        NumberFormat formatter = new DecimalFormat("#0.00");
 
         TreeItem<String> root = new TreeItem<>();
-        for(Collection<NewsDocument> cluster : clusters) {
-            TreeItem<String> clusterItem = new TreeItem<>();
-            for(NewsDocument doc : cluster) {
-                clusterItem.getChildren().add(new TreeItem<>(doc.getTitle()));
+        for(List<ClusterResultItem> cluster : clusters) {
+
+            Collections.sort(cluster, clusterResultItemComparator);
+
+            TreeItem<String> clusterTreeItem = new TreeItem<>();
+            for(ClusterResultItem clusterResultItem : cluster) {
+                NewsDocument doc = clusterResultItem.getNewsDocument();
+
+                double distanceFromCluster = clusterResultItem.getDistanceFromCentroid();
+
+                TreeItem<String> newsTreeItem = new TreeItem<>(formatter.format(distanceFromCluster) + " " + doc.getTitle());
+                clusterTreeItem.getChildren().add(newsTreeItem);
             }
-            root.getChildren().add(clusterItem);
+            root.getChildren().add(clusterTreeItem);
         }
 
-        List<PriorityQueue<String>> tagQueues = ClusterTagger.tag(clusters, MutualInformationFactory.getInstance());
+        Collection<Collection<NewsDocument>> newsDocumentsClusters = clusters.stream().map(
+                clusterResultItems -> clusterResultItems.stream().map(
+                        cri -> cri.getNewsDocument()).collect(Collectors.toList())
+        ).collect(Collectors.toList());
+
+        List<PriorityQueue<String>> tagQueues = ClusterTagger.tag(newsDocumentsClusters, MutualInformationFactory.getInstance());
 
         Iterator<TreeItem<String>> treeItemIterator = root.getChildren().iterator();
         Iterator<PriorityQueue<String>> tagIterator = tagQueues.iterator();
@@ -87,9 +117,20 @@ public class ClusterController implements Runnable {
             root.setExpanded(true);
             clusteringErrorTextField.setText(clusteringResult.getValue().toString());
 
-            refreshButton.setDisable(false);
+            refreshButton.setText(ButtonModes.ready);
             clustering = false;
+            refreshButton.setDisable(false);
         });
+    }
+
+    @FXML
+    public void clusterItemClicked(MouseEvent mouseEvent) {
+        /*Node node = mouseEvent.getPickResult().getIntersectedNode();
+        if(node instanceof Text) {
+            clusterTree.getSelectionModel().get
+            int ind = clusterTree.getSelectionModel().getSelectedIndex();
+            System.out.println(ind);
+        }*/
     }
 
     static class ButtonModes {

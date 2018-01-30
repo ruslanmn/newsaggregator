@@ -7,7 +7,8 @@ import java.util.Map;
 
 public class InvertedIndexVectorizer {
     public static List<DocumentVector> vectorize(InvertedIndex invertedIndex) {
-        List<DocumentVector> documentVectors = new ArrayList<>(invertedIndex.getDocumentsSize());
+        int documentsSize = invertedIndex.getDocumentsSize();
+        List<DocumentVector> documentVectors = new ArrayList<>(documentsSize);
 
         Map<String, Double> idfs = computeIdfs(invertedIndex);
         Map<String, Integer> termsSpaceMap = formTermsSpace(invertedIndex);
@@ -16,8 +17,15 @@ public class InvertedIndexVectorizer {
 
         for(NewsDocument newsDocument : invertedIndex.getDocuments()) {
             DocumentVector documentVector = new DocumentVector(termsSize, newsDocument);
-            for(String term : newsDocument.getWords())
-                documentVector.set(termsSpaceMap.get(term), newsDocument.getNormolizedTermWeight(term));
+            for(String term : newsDocument.getWords()) {
+                InvertedIndex.InvertedList invertedList = invertedIndex.getInvertedList(term);
+                double idf = 0;
+                if((invertedList != null) && (invertedList.size() > 0)) {
+                    idf = Math.log(documentsSize / invertedList.size());
+                }
+
+                documentVector.set(termsSpaceMap.get(term), idf * newsDocument.getNormolizedTermWeight(term));
+            }
             documentVectors.add(documentVector);
         }
 

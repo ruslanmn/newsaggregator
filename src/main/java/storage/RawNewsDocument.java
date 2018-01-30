@@ -12,17 +12,21 @@ public class RawNewsDocument {
     String link;
 
     public RawNewsDocument(String title, String link) throws IOException {
-        this.title = title;
+        this.title = title.replaceAll("\n", " ");
         this.link = link;
     }
 
-    public void loadAndStore(String dir) throws IOException {
-        String docFilePath = dir + "/" + title.hashCode() + ".txt";
+    public void loadAndStore(String dir, String name) throws IOException {
+        String docFilePath = dir + "/" + name + ".txt";
 
         if(! new File(docFilePath).isFile()) {
             String content = URLLoader.loadContentByUrl(link);
-            FileUtils.writeStringToFile(new File(docFilePath), title + "\n" + content, Charset.defaultCharset());
+            FileUtils.writeStringToFile(new File(docFilePath), title + '\n' + content, Charset.defaultCharset());
             System.out.println(title + " loaded and saved");
         }
+    }
+
+    public String getTitle() {
+        return title;
     }
 }
