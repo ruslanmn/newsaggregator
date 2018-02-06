@@ -79,7 +79,7 @@ public class DocumentLoader {
             File sourceFile = new File(ConfigLoader.DOCUMENTS_DIR_PATH + "/" + source.getId());
             for(File newsFile : sourceFile.listFiles(File::isFile)) {
                 if(!ConfigLoader.NEWS_LIST_FILENAME.equals(newsFile.getName()))
-                    newsDocuments.add(new NewsDocument(newsFile, sourceParser));
+                    newsDocuments.add(new NewsDocument(source.getUrl(), newsFile, sourceParser));
             }
         }
 

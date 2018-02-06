@@ -28,7 +28,7 @@ public class MainSimple {
         FileWriter fw = new FileWriter("news_clusters.txt");
 
         List<DocumentVector> vecs = nv.vectorize();
-        TreeNode<List<DocumentVector>> rootNode = DivisiveClusterer.cluster(vecs, MAX_LEVEL, DIVIDE_SIZE);
+        TreeNode<List<DocumentVector>> rootNode = DivisiveKMeansClusterer.cluster(vecs, MAX_LEVEL, DIVIDE_SIZE);
         DocumentClusterTree taggedClusters = tag(rootNode);
 
         draw(taggedClusters);

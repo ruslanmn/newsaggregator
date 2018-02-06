@@ -2,14 +2,14 @@ package clustering;
 
 import documentprocessing.ClusterResultItem;
 import documentsdatastructures.DocumentVector;
-import org.apache.commons.math3.ml.clustering.CentroidCluster;
-import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
+import org.apache.commons.math3.ml.clustering.Cluster;
+import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import treedatastructures.TreeNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DivisiveClusterer {
+public class DivisiveDBSCANClusterer {
 
     double rss;
     private TreeNode<List<ClusterResultItem>> rootNode;
@@ -39,16 +39,16 @@ public class DivisiveClusterer {
         if((level >= maxLevel) || (points.size() < divideSize))
             return clusterNode;
 
-        KMeansPlusPlusClusterer<DocumentVector> kMeansPP = new KMeansPlusPlusClusterer<>(divideSize);
-        List<CentroidCluster<DocumentVector>> centroids = kMeansPP.cluster(points);
-        for(CentroidCluster<DocumentVector> centroid : centroids) {
+        DBSCANClusterer<DocumentVector> dbscan = new DBSCANClusterer<>(10000000, 5);
+        List<Cluster<DocumentVector>> centroids = dbscan.cluster(points);
+        for(Cluster<DocumentVector> centroid : centroids) {
 
             List<DocumentVector> centroidPoints = centroid.getPoints();
             List<ClusterResultItem> clusterResultItems = new ArrayList<>(centroidPoints.size());
 
             // compute rss for centroid
             for(DocumentVector point : centroidPoints) {
-                double dist = kMeansPP.getDistanceMeasure().compute(point.getPoint(), centroid.getCenter().getPoint());
+                double dist = 0;//dbscan.getDistanceMeasure().compute(point.getPoint(), centroid.getCenter().getPoint());
                 rss += dist*dist;
 
                 ClusterResultItem clusterResultItem = new ClusterResultItem(point.getDocument(), dist);

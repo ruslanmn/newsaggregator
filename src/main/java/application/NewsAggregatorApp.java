@@ -37,6 +37,7 @@ public class NewsAggregatorApp extends Application {
         documentProcessor = new DocumentProcessor();
         List<NewsDocument> newsDocuments = DocumentLoader.loadNewsDocuments();
         documentProcessor.addAll(newsDocuments);
+        documentProcessor.finish();
 
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(is_search_mode ? searchPage : clusterPage));
 

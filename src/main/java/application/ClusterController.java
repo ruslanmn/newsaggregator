@@ -32,6 +32,7 @@ public class ClusterController implements Runnable {
     private boolean clustering;
 
     Comparator<ClusterResultItem> clusterResultItemComparator;
+    NumberFormat formatter = new DecimalFormat("#0.00");
 
     @FXML
     public void initialize() {
@@ -73,7 +74,7 @@ public class ClusterController implements Runnable {
 
         List<List<ClusterResultItem>> clusters = clusteringResult.getKey();
 
-        NumberFormat formatter = new DecimalFormat("#0.00");
+
 
         TreeItem<String> root = new TreeItem<>();
         for(List<ClusterResultItem> cluster : clusters) {
@@ -83,10 +84,11 @@ public class ClusterController implements Runnable {
             TreeItem<String> clusterTreeItem = new TreeItem<>();
             for(ClusterResultItem clusterResultItem : cluster) {
                 NewsDocument doc = clusterResultItem.getNewsDocument();
-
                 double distanceFromCluster = clusterResultItem.getDistanceFromCentroid();
 
-                TreeItem<String> newsTreeItem = new TreeItem<>(formatter.format(distanceFromCluster) + " " + doc.getTitle());
+                String name = formatter.format(distanceFromCluster) + " " + doc.getTitle() + " " + doc.getSourceName();
+
+                TreeItem<String> newsTreeItem = new TreeItem<>(name);
                 clusterTreeItem.getChildren().add(newsTreeItem);
             }
             root.getChildren().add(clusterTreeItem);
@@ -97,10 +99,26 @@ public class ClusterController implements Runnable {
                         cri -> cri.getNewsDocument()).collect(Collectors.toList())
         ).collect(Collectors.toList());
 
+        tagByClosest(root, newsDocumentsClusters);
+
+        Platform.runLater(() -> {
+            clusterTree.setRoot(root);
+            root.setExpanded(true);
+            clusteringErrorTextField.setText(formatter.format(clusteringResult.getValue()) + " for "
+            + root.getChildren().size() + " clusters");
+
+            refreshButton.setText(ButtonModes.ready);
+            clustering = false;
+            refreshButton.setDisable(false);
+        });
+    }
+
+    private void tag(TreeItem<String> root, Collection<Collection<NewsDocument>> newsDocumentsClusters) {
         List<PriorityQueue<String>> tagQueues = ClusterTagger.tag(newsDocumentsClusters, MutualInformationFactory.getInstance());
 
         Iterator<TreeItem<String>> treeItemIterator = root.getChildren().iterator();
         Iterator<PriorityQueue<String>> tagIterator = tagQueues.iterator();
+
         while(treeItemIterator.hasNext()) {
             StringBuilder clusterName = new StringBuilder();
 
@@ -112,16 +130,17 @@ public class ClusterController implements Runnable {
 
             treeItemIterator.next().setValue(clusterName.toString());
         }
-        Platform.runLater(() -> {
-            clusterTree.setRoot(root);
-            root.setExpanded(true);
-            clusteringErrorTextField.setText(clusteringResult.getValue().toString());
-
-            refreshButton.setText(ButtonModes.ready);
-            clustering = false;
-            refreshButton.setDisable(false);
-        });
     }
+
+    private void tagByClosest(TreeItem<String> root, Collection<Collection<NewsDocument>> newsDocumentsClusters) {
+        Iterator<TreeItem<String>> treeItemIterator = root.getChildren().iterator();
+        Iterator<Collection<NewsDocument>> newsDocumentsIterator = newsDocumentsClusters.iterator();
+
+        while(treeItemIterator.hasNext()) {
+            treeItemIterator.next().setValue(newsDocumentsIterator.next().iterator().next().getTitle());
+        }
+    }
+
 
     @FXML
     public void clusterItemClicked(MouseEvent mouseEvent) {

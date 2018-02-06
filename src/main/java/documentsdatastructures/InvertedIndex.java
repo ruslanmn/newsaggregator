@@ -59,9 +59,7 @@ public class InvertedIndex {
             double idf = Math.log(documentsSize / df);
 
             for(NewsDocument newsDocument : invertedList.getDocuments()) {
-                double w = newsDocument.getNormolizedTermWeight(term);
-
-                double score = idf * w;
+                double score = newsDocument.getNormolizedTermWeight(term);
                 if(scores.containsKey(newsDocument))
                     score += scores.get(newsDocument);
                 scores.put(newsDocument, score);
@@ -116,6 +114,11 @@ public class InvertedIndex {
 
     public int getDocumentsSize() {
         return documents.size();
+    }
+
+    public void normalizeDocuments() {
+        for(NewsDocument doc : documents)
+            doc.normalize(this);
     }
 
     class InvertedList {

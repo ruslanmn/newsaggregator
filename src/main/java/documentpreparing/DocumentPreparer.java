@@ -21,14 +21,14 @@ public class DocumentPreparer {
 
 
     public static String prepareWord(String word) {
-        for(int i = 1; i < word.length(); i++) {
+        /*for(int i = 1; i < word.length(); i++) {
             char c = word.charAt(i);
             if((('A' <= c) && (c <= 'Z')) ||
                     (('А' <= c) && (c <= 'Я')) ||
                     (('0' <= c) && (c <= '9'))) {
                 return word;
             }
-        }
+        }*/
 
         int i;
         for(i = word.length() - 1; (i > 1) && checkSkipChar(word.charAt(i)); i--);

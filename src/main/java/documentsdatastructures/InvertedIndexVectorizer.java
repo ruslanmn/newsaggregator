@@ -18,13 +18,7 @@ public class InvertedIndexVectorizer {
         for(NewsDocument newsDocument : invertedIndex.getDocuments()) {
             DocumentVector documentVector = new DocumentVector(termsSize, newsDocument);
             for(String term : newsDocument.getWords()) {
-                InvertedIndex.InvertedList invertedList = invertedIndex.getInvertedList(term);
-                double idf = 0;
-                if((invertedList != null) && (invertedList.size() > 0)) {
-                    idf = Math.log(documentsSize / invertedList.size());
-                }
-
-                documentVector.set(termsSpaceMap.get(term), idf * newsDocument.getNormolizedTermWeight(term));
+                documentVector.set(termsSpaceMap.get(term), newsDocument.getNormolizedTermWeight(term));
             }
             documentVectors.add(documentVector);
         }

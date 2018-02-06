@@ -1,12 +1,14 @@
 package documentprocessing;
 
-import clustering.DivisiveClusterer;
+import clustering.DivisiveKMeansClusterer;
 import documentsdatastructures.DocumentVector;
 import documentsdatastructures.InvertedIndex;
 import documentsdatastructures.InvertedIndexVectorizer;
 import documentsdatastructures.NewsDocument;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.math3.ml.distance.DistanceMeasure;
+import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import treedatastructures.TreeNode;
 
 import java.util.List;
@@ -14,11 +16,11 @@ import java.util.stream.Collectors;
 
 public class DocumentProcessor {
     InvertedIndex invertedIndex;
-    DivisiveClusterer divisiveClusterer;
+    DivisiveKMeansClusterer divisiveKMeansClusterer;
 
     public DocumentProcessor() {
         invertedIndex = new InvertedIndex();
-        divisiveClusterer = new DivisiveClusterer();
+        divisiveKMeansClusterer = new DivisiveKMeansClusterer();
     }
 
     public List<SearchResultItem> search(String query, int size) {
@@ -27,25 +29,26 @@ public class DocumentProcessor {
 
     public Pair<List<List<ClusterResultItem>>, Double> clusterize(int clusterSize) {
         List<DocumentVector> documentVectors = InvertedIndexVectorizer.vectorize(invertedIndex);
-
-       /* divisiveClusterer.cluster(documentVectors, 1, 3);
-        double min = divisiveClusterer.getClusteringError();
+        int numTrials = 1;
+        DistanceMeasure measure = new EuclideanDistance();
+        /*divisiveKMeansClusterer.cluster(documentVectors, 1, 3, numTrials, measure);
+        double min = divisiveKMeansClusterer.getClusteringError();
         int minCs = 3;
 
         for(int cs = 4; cs <= clusterSize; cs++) {
             System.out.println("cs = " + cs);
-            divisiveClusterer.cluster(documentVectors, 1, cs);
-            if(divisiveClusterer.getClusteringError() < min) {
-                min = divisiveClusterer.getClusteringError();
+            divisiveKMeansClusterer.cluster(documentVectors, 1, cs, numTrials, measure);
+            if(divisiveKMeansClusterer.getClusteringError() < min) {
+                min = divisiveKMeansClusterer.getClusteringError();
                 minCs = cs;
             }
         }
 
-        divisiveClusterer.cluster(documentVectors, 1, minCs);*/
-        divisiveClusterer.cluster(documentVectors, 1, clusterSize);
+        divisiveKMeansClusterer.cluster(documentVectors, 1, minCs, numTrials, measure);*/
+        divisiveKMeansClusterer.cluster(documentVectors, 1, clusterSize, numTrials, measure);
 
-        TreeNode<List<ClusterResultItem>> clusters = divisiveClusterer.getRootNode();
-        Double error = divisiveClusterer.getClusteringError();
+        TreeNode<List<ClusterResultItem>> clusters = divisiveKMeansClusterer.getRootNode();
+        Double error = divisiveKMeansClusterer.getClusteringError();
 
         List<List<ClusterResultItem>> result = clusters.getChildren().stream().map(treeNode -> treeNode.getValue()).collect(Collectors.toList());
 
@@ -54,5 +57,9 @@ public class DocumentProcessor {
 
     public void addAll(List<NewsDocument> newsDocuments) {
         invertedIndex.addAll(newsDocuments);
+    }
+
+    public void finish() {
+        invertedIndex.normalizeDocuments();
     }
 }
