@@ -14,11 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.ws.Service;
 import java.io.IOException;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 
 
 public class NewsAggregatorApp extends Application {
@@ -36,15 +32,7 @@ public class NewsAggregatorApp extends Application {
     private static final String clusterPage = "cluster_page.fxml";
 
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, ParseException {
-        String dateStr = "Thu, 29 Mar 2018 00:32:54";
-        DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-        Date date = formatter.parse(dateStr);
-
-        DateFormat outFormat = new SimpleDateFormat("dd MM yyyy HH:mm");
-        outFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-        System.out.println(outFormat.format(date));
-        //launch(args);
+        launch(args);
     }
 
 

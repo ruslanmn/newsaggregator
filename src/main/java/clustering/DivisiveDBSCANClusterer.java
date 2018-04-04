@@ -52,7 +52,7 @@ public class DivisiveDBSCANClusterer {
                 double dist = 0;//dbscan.getDistanceMeasure().compute(point.getPoint(), centroid.getCenter().getPoint());
                 rss += dist*dist;
                 NewsDocument doc = point.getDocument();
-                ItemModel clusterItem = new ItemModel(doc.getTitle(), doc.getSource(), dist);
+                ItemModel clusterItem = new ItemModel(doc.getTitle(), doc.getSource(), doc.getDate(), dist);
                 clusterItems.add(clusterItem);
             }
 

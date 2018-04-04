@@ -1,13 +1,18 @@
 package application;
 
-import datastructures.*;
+import datastructures.ClusterModel;
+import datastructures.ClusteringResult;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.TextField;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClusterController implements Runnable {
@@ -18,7 +23,10 @@ public class ClusterController implements Runnable {
     @FXML
     public Button refreshButton;
     @FXML
-    TreeView<String> clusterTree;
+    ListView<String> clusterListView;
+
+
+    List<ClusterModel> clusters;
 
     private static int clusterSize = 20;
     private static int tagSize = 10;
@@ -49,17 +57,15 @@ public class ClusterController implements Runnable {
     }
 
     @Override
-
     public void run() {
         clustering = true;
 
         ClusteringResult clusteringResult = NewsAggregatorApp.app.clusteringWebService.getClusters();
 
-        List<ClusterModel> clusters = clusteringResult.getClusters();
+        clusters = new ArrayList<>(clusteringResult.getClusters());
 
 
-
-        TreeItem<String> root = new TreeItem<>();
+/*        TreeItem<String> root = new TreeItem<>();
         for(ClusterModel cluster : clusters) {
             List<ItemModel> itemModels = cluster.getItemModels();
             TreeItem<String> clusterTreeItem = new TreeItem<>(cluster.getName());
@@ -74,13 +80,17 @@ public class ClusterController implements Runnable {
             }
 
             root.getChildren().add(clusterTreeItem);
-        }
+        }*/
+
 
         Platform.runLater(() -> {
-            clusterTree.setRoot(root);
-            root.setExpanded(true);
+            clusterListView.getItems().clear();
+            for(ClusterModel clusterModel : clusters) {
+                clusterListView.getItems().add(clusterModel.getName());
+            }
+
             clusteringErrorTextField.setText(formatter.format(clusteringResult.getRss()) + " for "
-            + root.getChildren().size() + " clusters");
+            + clusters.size() + " clusters");
 
             refreshButton.setText(ButtonModes.ready);
             clustering = false;

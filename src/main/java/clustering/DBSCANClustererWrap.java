@@ -40,7 +40,7 @@ public class DBSCANClustererWrap {
             for(DocumentVector docVec : centroidPoints) {
                 double[] point = docVec.getPoint();
                 double dist = distanceMeasure.compute(centroid, point);
-                ItemModel clusterItem = new ItemModel(docVec.getDocument().getTitle(), docVec.getDocument().getSource(), dist);
+                ItemModel clusterItem = new ItemModel(docVec.getDocument().getTitle(), docVec.getDocument().getSource(), docVec.getDocument().getDate(), dist);
 
                 docs.add(clusterItem);
 
