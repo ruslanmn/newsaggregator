@@ -8,32 +8,73 @@ import org.apache.commons.collections4.SetUtils;
 import java.util.*;
 
 public class InvertedIndex {
+
+    public int getBestClusterSize() {
+
+        int n = termsMap.size();
+        int m = documents.size();
+
+        int t = 0;
+        for(NewsDocument doc : documents) {
+            t += doc.getWordsOccurrences().size();
+        }
+
+        return (int)Math.ceil(n * m / (double) t);
+    }
+
     HashMap<String, InvertedList> termsMap;
     List<NewsDocument> documents;
+
+    HashSet<String> usedTitles;
 
     public InvertedIndex() {
         termsMap = new HashMap<>();
         documents = new LinkedList<>();
+        usedTitles = new HashSet<>();
     }
 
     public void add(NewsDocument document) {
-        System.out.println(document.getTitle() + " added to inverted index");
-        documents.add(document);
-        for(String term : document.getWords()) {
-            InvertedList invertedList;
-            if(termsMap.containsKey(term))
-                invertedList = termsMap.get(term);
-            else {
-                invertedList = new InvertedList();
-                termsMap.put(term, invertedList);
+        if(usedTitles.add(document.getTitle())) {
+            if(document.getTitle().contains("Хирурга")) {
+                System.out.print(document.getTitle());
             }
-            invertedList.add(document);
+            System.out.println(document.getTitle() + " added to inverted index");
+            documents.add(document);
+            for (String term : document.getWords()) {
+                InvertedList invertedList;
+                if (termsMap.containsKey(term))
+                    invertedList = termsMap.get(term);
+                else {
+                    invertedList = new InvertedList();
+                    termsMap.put(term, invertedList);
+                }
+                invertedList.add(document);
+            }
         }
     }
 
     public void addAll(List<NewsDocument> newsDocuments) {
+        boolean met = false;
+        String oldTitle = null, newTitle = null;
         for(NewsDocument newsDocument : newsDocuments) {
             add(newsDocument);
+
+            if(newsDocument.getTitle().contains("Хирурга"))
+                if(met) {
+                    newTitle = newsDocument.getTitle();
+                    char c = 160;
+
+                    String[] olds = oldTitle.split(" ");
+                    String[] news = newTitle.split(" ");
+
+                    for(int i = 0; i < olds.length; i++)
+                        System.out.println(olds[i].equals(news[i]));
+
+                    System.out.print(oldTitle + newTitle + c);
+                } else {
+                    met = true;
+                    oldTitle = newsDocument.getTitle();
+                }
         }
     }
 

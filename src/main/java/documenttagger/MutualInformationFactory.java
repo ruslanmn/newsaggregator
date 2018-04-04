@@ -31,10 +31,10 @@ public class MutualInformationFactory {
                 for(MultiSet.Entry<String> termCount : clusterCount.getTermCounts().entrySet()) {
                     /*
                         n = total docs
-                        n11 = with term in cluster
-                        n10 = with term out of cluster
-                        n01 = not with term in cluster
-                        n00 = not with term out of cluster
+                        n11 = with term in performClustering
+                        n10 = with term out of performClustering
+                        n01 = not with term in performClustering
+                        n00 = not with term out of performClustering
                      */
 
                     String term = termCount.getElement();

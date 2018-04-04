@@ -27,7 +27,6 @@
 
       <TreeView fx:id="clusterTree"
                 editable="false"
-                onMouseClicked="#clusterItemClicked"
                 AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20" AnchorPane.topAnchor="50" />
 
       <TextField fx:id="clusteringErrorTextField" AnchorPane.leftAnchor="430" AnchorPane.topAnchor="10"/>

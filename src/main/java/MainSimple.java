@@ -28,7 +28,7 @@ public class MainSimple {
         FileWriter fw = new FileWriter("news_clusters.txt");
 
         List<DocumentVector> vecs = nv.vectorize();
-        TreeNode<List<DocumentVector>> rootNode = DivisiveKMeansClusterer.cluster(vecs, MAX_LEVEL, DIVIDE_SIZE);
+        TreeNode<List<DocumentVector>> rootNode = DivisiveKMeansClusterer.performClustering(vecs, MAX_LEVEL, DIVIDE_SIZE);
         DocumentClusterTree taggedClusters = tag(rootNode);
 
         draw(taggedClusters);
@@ -53,9 +53,9 @@ public class MainSimple {
 
 
             int i = 0;
-            for(TreeNode<List<DocumentVector>> cluster : clusters) {
+            for(TreeNode<List<DocumentVector>> performClustering : clusters) {
                 DocumentClusterTree parentDCT = dcts.get(i);
-                children = cluster.getChildren();
+                children = performClustering.getChildren();
                 formNextDocumentClusterTrees(children, nextDCTs, nextLevel, parentDCT);
                 i++;
             }
@@ -119,7 +119,7 @@ public class MainSimple {
 
 /*
         KMeansPlusPlusClusterer<DocumentVector> kMeansPP = new KMeansPlusPlusClusterer<>(12);
-        List<CentroidCluster<DocumentVector>> centroids = kMeansPP.cluster(vecs);
+        List<CentroidCluster<DocumentVector>> centroids = kMeansPP.performClustering(vecs);
         List<List<Set<String>>> documentClusters = centroids.stream()
                 .map(centroid -> centroid.getPoints().stream().map(documentVector ->
                         documentVector.getDocument().getWords())

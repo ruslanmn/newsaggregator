@@ -7,10 +7,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="NewsAggregator" />
+        <module name="newsaggragatorclient" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="newsaggragatorclient" target="1.8" />
       <module name="NewsAggregator" target="1.8" />
     </bytecodeTargetLevel>
   </component>

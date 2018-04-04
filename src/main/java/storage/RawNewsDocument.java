@@ -10,9 +10,11 @@ import java.nio.charset.Charset;
 public class RawNewsDocument {
     String title;
     String link;
+    String date;
 
-    public RawNewsDocument(String title, String link) throws IOException {
+    public RawNewsDocument(String title, String link, String date) throws IOException {
         this.title = title.replaceAll("\n", " ");
+        this.date = date;
         this.link = link;
     }
 
@@ -21,7 +23,9 @@ public class RawNewsDocument {
 
         if(! new File(docFilePath).isFile()) {
             String content = URLLoader.loadContentByUrl(link);
-            FileUtils.writeStringToFile(new File(docFilePath), title + '\n' + content, Charset.defaultCharset());
+            FileUtils.writeStringToFile(new File(docFilePath), title + '\n' +
+                    date + '\n' +
+                    content, Charset.defaultCharset());
             System.out.println(title + " loaded and saved");
         }
     }

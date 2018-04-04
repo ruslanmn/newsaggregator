@@ -10,8 +10,13 @@ import storage.RawNewsDocument;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 
 public class RssParser {
 
@@ -28,13 +33,13 @@ public class RssParser {
     }
 
 
-    public List<RawNewsDocument> parseRawDocumentsByUrl(String rssUrl) throws IOException, ParserConfigurationException, SAXException {
+    public List<RawNewsDocument> parseRawDocumentsByUrl(String rssUrl) throws IOException, ParserConfigurationException, SAXException, ParseException {
         List<RawNewsDocument> rawNewsDocuments = rssParser.parseRawDocuments(rssUrl);
         return rawNewsDocuments;
     }
 
 
-    public List<RawNewsDocument> parseRawDocuments(String rssFeedUrl) throws IOException, SAXException, ParserConfigurationException {
+    public List<RawNewsDocument> parseRawDocuments(String rssFeedUrl) throws IOException, SAXException, ParserConfigurationException, ParseException {
         Document doc = Jsoup.connect(rssFeedUrl).get();
 
         Elements items = doc.select("item");
@@ -43,10 +48,20 @@ public class RssParser {
         for(Element item : items) {
             String title = item.getElementsByTag("title").first().text();
             String link = item.getElementsByTag("link").first().text();
-            rawNewsDocuments.add(new RawNewsDocument(title, link));
+            String date = convertDate(item.getElementsByTag("pubDate").first().text());
+            rawNewsDocuments.add(new RawNewsDocument(title, link, date));
         }
 
         return rawNewsDocuments;
+    }
+
+    private String convertDate(String dateStr) throws ParseException {
+        DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+        Date date = formatter.parse(dateStr);
+        DateFormat outFormat = new SimpleDateFormat("dd MM yyyy HH:mm");
+        outFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+        return outFormat.format(date);
     }
 
 }

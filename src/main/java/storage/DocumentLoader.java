@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +70,7 @@ public class DocumentLoader {
     }
 
 
-    public static List<NewsDocument> loadNewsDocuments() throws IOException, ParserConfigurationException, SAXException {
+    public static List<NewsDocument> loadNewsDocuments() throws IOException, ParserConfigurationException, SAXException, ParseException {
         File[] sources = new File(ConfigLoader.DOCUMENTS_DIR_PATH).listFiles(File::isDirectory);
 
         List<NewsDocument> newsDocuments = new LinkedList<>();

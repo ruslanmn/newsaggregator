@@ -31,9 +31,9 @@ public class ClusterTagger {
 
         for(int clusterInd = 0; clusterInd < clusters.size(); clusterInd++) {
             PriorityQueue<String> clusterTags = clustersTags.get(clusterInd);
-            List<Set<String>> cluster = clusters.get(clusterInd);
-            List<List<String>> clusterDocs = new ArrayList<>(cluster.size());
-            for(Set<String> doc : cluster) {
+            List<Set<String>> performClustering = clusters.get(clusterInd);
+            List<List<String>> clusterDocs = new ArrayList<>(performClustering.size());
+            for(Set<String> doc : performClustering) {
                 List<String> docTags = new ArrayList<>(tagsSize);
                 int tagInd = 0;
                 for(String tag : clusterTags) {

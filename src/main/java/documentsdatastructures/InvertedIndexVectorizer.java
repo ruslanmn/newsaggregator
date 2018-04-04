@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class InvertedIndexVectorizer {
-    public static List<DocumentVector> vectorize(InvertedIndex invertedIndex) {
+    public static VectorizedDocuments vectorize(InvertedIndex invertedIndex) {
         int documentsSize = invertedIndex.getDocumentsSize();
         List<DocumentVector> documentVectors = new ArrayList<>(documentsSize);
 
@@ -23,7 +23,7 @@ public class InvertedIndexVectorizer {
             documentVectors.add(documentVector);
         }
 
-        return documentVectors;
+        return new VectorizedDocuments(termsSpaceMap, documentVectors);
     }
 
     private static Map<String,Integer> formTermsSpace(InvertedIndex invertedIndex) {
@@ -52,4 +52,6 @@ public class InvertedIndexVectorizer {
 
         return idfs;
     }
+
+    
 }
