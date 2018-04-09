@@ -1,17 +1,8 @@
 package application;
 
-import documentprocessing.SearchResultItem;
-import documentsdatastructures.NewsDocument;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class SearchController {
-    @FXML
+    /*@FXML
     private TextField searchText;
 
     @FXML
@@ -42,5 +33,5 @@ public class SearchController {
 
         searchResultsListView.getItems().setAll(values);
     }
-
+*/
 }

@@ -2,6 +2,7 @@ package application;
 
 import datastructures.ClusterModel;
 import datastructures.ClusteringResult;
+import datastructures.ItemModel;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,13 +10,23 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import lombok.Setter;
 
+import java.util.Date;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClusterController implements Runnable {
+public class ClustersController implements Runnable {
+
+    @Setter
+    private PageManager pageManager;
+
     @FXML
     public Spinner<Integer> clusterSizeSpinner;
     @FXML
@@ -38,10 +49,8 @@ public class ClusterController implements Runnable {
 
     @FXML
     public void initialize() {
-        NewsAggregatorApp.app.clusterController = this;
         refreshButton.setText(ButtonModes.ready);
         clustering = false;
-
     }
 
 
@@ -60,7 +69,8 @@ public class ClusterController implements Runnable {
     public void run() {
         clustering = true;
 
-        ClusteringResult clusteringResult = NewsAggregatorApp.app.clusteringWebService.getClusters();
+
+        ClusteringResult clusteringResult = fakeInit();//NewsAggregatorApp.app.clusteringWebService.getClusters();
 
         clusters = new ArrayList<>(clusteringResult.getClusters());
 
@@ -98,6 +108,51 @@ public class ClusterController implements Runnable {
         });
 
     }
+
+    private ClusteringResult fakeInit() {
+        ItemModel item1 = new ItemModel("fakeTitle1", "fakeSource1", new Date(), 10);
+        ItemModel item2 = new ItemModel("fakeTitle2", "fakeSource2", new Date(), 15);
+        ItemModel item3 = new ItemModel("fakeTitle3", "fakeSource1", new Date(), 10);
+        ItemModel item4 = new ItemModel("fakeTitle4", "fakeSource2", new Date(), 15);
+
+
+        ClusterModel cluster1 = new ClusterModel();
+        cluster1.setName("cluster1");
+        cluster1.getItemModels().add(item1);
+        cluster1.getItemModels().add(item2);
+
+        ClusterModel cluster2 = new ClusterModel();
+        cluster2.setName("cluster2");
+        cluster2.getItemModels().add(item3);
+        cluster2.getItemModels().add(item4);
+
+        ClusteringResult clusteringResult = new ClusteringResult();
+        clusteringResult.setRss(10);
+        clusteringResult.getClusters().add(cluster1);
+        clusteringResult.getClusters().add(cluster2);
+
+        return clusteringResult;
+    }
+
+
+    public void onClusterClick(MouseEvent mouseEvent) {
+        if (MouseButton.PRIMARY.equals(mouseEvent.getButton()) && mouseEvent.getClickCount() == 2) {
+            handleItemSelection();
+        }
+    }
+
+    public void onKeyPressed(KeyEvent keyEvent) {
+        if(KeyCode.ENTER.equals(keyEvent.getCode())) {
+            handleItemSelection();
+        }
+    }
+
+    private void handleItemSelection() {
+        int ind = clusterListView.getSelectionModel().getSelectedIndex();
+        pageManager.changeToClusterTablePage(clusters.get(ind));
+        System.out.println(clusterListView.getSelectionModel().getSelectedItem());
+    }
+
     /*
 
     private void tag(TreeItem<String> root, Collection<Collection<NewsDocument>> newsDocumentsClusters) {

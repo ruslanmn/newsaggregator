@@ -2,7 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane prefHeight="641.0" prefWidth="624.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ClusterController">
+<AnchorPane prefHeight="641.0" prefWidth="624.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ClustersController">
    <children>
 
       <Button fx:id="refreshButton"
@@ -19,7 +19,9 @@
 
 
       <ListView fx:id="clusterListView"
+                onMouseClicked="#onClusterClick"
                 editable="false"
+                onKeyPressed="#onKeyPressed"
                 AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20" AnchorPane.topAnchor="50" />
 
       <TextField fx:id="clusteringErrorTextField" AnchorPane.leftAnchor="430" AnchorPane.topAnchor="10"/>
