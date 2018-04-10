@@ -13,7 +13,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class ItemModel {
     String title;
-    String sourceName;
+    String source;
     Date date;
-    double distanceFromCentroid;
+    double distance;
+    String url;
 }

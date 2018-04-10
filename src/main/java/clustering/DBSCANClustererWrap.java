@@ -4,6 +4,7 @@ import documentprocessing.datastructures.ClusterModel;
 import documentprocessing.datastructures.ClusteringResult;
 import documentprocessing.datastructures.ItemModel;
 import documentsdatastructures.DocumentVector;
+import documentsdatastructures.NewsDocument;
 import org.apache.commons.math3.ml.clustering.*;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
@@ -40,7 +41,8 @@ public class DBSCANClustererWrap {
             for(DocumentVector docVec : centroidPoints) {
                 double[] point = docVec.getPoint();
                 double dist = distanceMeasure.compute(centroid, point);
-                ItemModel clusterItem = new ItemModel(docVec.getDocument().getTitle(), docVec.getDocument().getSource(), docVec.getDocument().getDate(), dist);
+                NewsDocument doc = docVec.getDocument();
+                ItemModel clusterItem = new ItemModel(doc.getTitle(), doc.getSource(), doc.getDate(), dist, doc.getUrl());
 
                 docs.add(clusterItem);
 

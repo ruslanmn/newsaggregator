@@ -27,9 +27,9 @@ public class KMeansClusterer {
         this.euclideanDistance = new EuclideanDistance();
 
         clusterResultItemComparator = (o1, o2) -> {
-            if(o1.getDistanceFromCentroid() > o2.getDistanceFromCentroid())
+            if(o1.getDistance() > o2.getDistance())
                 return 1;
-            else if (o1.getDistanceFromCentroid() < o2.getDistanceFromCentroid())
+            else if (o1.getDistance() < o2.getDistance())
                 return -1;
             else
                 return 0;
@@ -59,7 +59,7 @@ public class KMeansClusterer {
                 double[] point = docVec.getPoint();
                 double dist = distanceMeasure.compute(centroid, point);
                 NewsDocument doc = docVec.getDocument();
-                ItemModel clusterItem = new ItemModel(doc.getTitle(), doc.getSource(), doc.getDate(), dist);
+                ItemModel clusterItem = new ItemModel(doc.getTitle(), doc.getSource(), doc.getDate(), dist, doc.getUrl());
 
                 docs.add(clusterItem);
 

@@ -46,10 +46,14 @@ public class RssParser {
         List<RawNewsDocument> rawNewsDocuments = new LinkedList<>();
 
         for(Element item : items) {
-            String title = item.getElementsByTag("title").first().text();
-            String link = item.getElementsByTag("link").first().text();
-            String date = convertDate(item.getElementsByTag("pubDate").first().text());
-            rawNewsDocuments.add(new RawNewsDocument(title, link, date));
+            try {
+                String title = item.getElementsByTag("title").first().text();
+                String link = item.getElementsByTag("link").first().text();
+                String date = convertDate(item.getElementsByTag("pubDate").first().text());
+                rawNewsDocuments.add(new RawNewsDocument(title, link, date));
+            } catch (NullPointerException e) {
+                System.out.println(item.toString());
+            }
         }
 
         return rawNewsDocuments;

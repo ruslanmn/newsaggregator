@@ -23,7 +23,8 @@ public class RawNewsDocument {
 
         if(! new File(docFilePath).isFile()) {
             String content = URLLoader.loadContentByUrl(link);
-            FileUtils.writeStringToFile(new File(docFilePath), title + '\n' +
+            FileUtils.writeStringToFile(new File(docFilePath), link + '\n' +
+                    title + '\n' +
                     date + '\n' +
                     content, Charset.defaultCharset());
             System.out.println(title + " loaded and saved");

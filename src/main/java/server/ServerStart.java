@@ -25,7 +25,7 @@ public class ServerStart {
         documentProcessor.finish();
 
         System.out.println("Clustering...");
-        ClusteringResult clusteringResult = ServerStart.documentProcessor.performClustering(25);
+        ClusteringResult clusteringResult = ServerStart.documentProcessor.performClustering(10);
         ClusteringWebServiceImpl clusteringWebService = new ClusteringWebServiceImpl();
         clusteringWebService.clusteringResult = clusteringResult;
 

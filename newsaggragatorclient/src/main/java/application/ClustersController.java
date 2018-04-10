@@ -70,7 +70,7 @@ public class ClustersController implements Runnable {
         clustering = true;
 
 
-        ClusteringResult clusteringResult = fakeInit();//NewsAggregatorApp.app.clusteringWebService.getClusters();
+        ClusteringResult clusteringResult = pageManager.getClusters();
 
         clusters = new ArrayList<>(clusteringResult.getClusters());
 
@@ -81,9 +81,9 @@ public class ClustersController implements Runnable {
             TreeItem<String> clusterTreeItem = new TreeItem<>(cluster.getName());
 
             for(ItemModel item : itemModels) {
-                double distanceFromCluster = item.getDistanceFromCentroid();
+                double distanceFromCluster = item.getDistance();
 
-                String name = formatter.format(distanceFromCluster) + " " + item.getTitle() + " " + item.getSourceName();
+                String name = formatter.format(distanceFromCluster) + " " + item.getTitle() + " " + item.getSource();
 
                 TreeItem<String> newsTreeItem = new TreeItem<>(name);
                 clusterTreeItem.getChildren().add(newsTreeItem);
@@ -110,10 +110,20 @@ public class ClustersController implements Runnable {
     }
 
     private ClusteringResult fakeInit() {
-        ItemModel item1 = new ItemModel("fakeTitle1", "fakeSource1", new Date(), 10);
-        ItemModel item2 = new ItemModel("fakeTitle2", "fakeSource2", new Date(), 15);
-        ItemModel item3 = new ItemModel("fakeTitle3", "fakeSource1", new Date(), 10);
-        ItemModel item4 = new ItemModel("fakeTitle4", "fakeSource2", new Date(), 15);
+        Date d = new Date();
+        ItemModel item1 = new ItemModel("fakeTitle1", "fakeSource1", d, 10);
+
+        d = new Date();
+        d.setYear(10);
+        ItemModel item2 = new ItemModel("fakeTitle2", "fakeSource2", d, 15);
+
+        d = new Date();
+        d.setYear(50);
+        ItemModel item3 = new ItemModel("fakeTitle3", "fakeSource1", d, 10);
+
+        d = new Date();
+        d.setYear(30);
+        ItemModel item4 = new ItemModel("fakeTitle4", "fakeSource2", d, 15);
 
 
         ClusterModel cluster1 = new ClusterModel();

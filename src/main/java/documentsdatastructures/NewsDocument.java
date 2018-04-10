@@ -29,15 +29,15 @@ public class NewsDocument {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GWT"));
     }
 
-    String title;
-    Date date;
-    MultiSet<String> wordsOccurrences;
+    private String title;
+    private Date date;
+    private String source;
+    private String content;
+    private String url;
 
-    Map<String, Double> normalizedTerms;
+    private MultiSet<String> wordsOccurrences;
+    private Map<String, Double> normalizedTerms;
 
-    String source;
-
-    String content;
 
     public NewsDocument() {
         wordsOccurrences = new HashMultiSet<>();
@@ -48,32 +48,29 @@ public class NewsDocument {
             "\u2000","\u2001", "\u2002", "\u2003", "\u2004", "\u2005", "\u2006",
             "\u2007", "\u2008", "\u2009", "\u200a"};
 
-    public NewsDocument(String title, String url) throws IOException {
-        setTitle(title);
-        Document doc = Jsoup.connect(url).get();
-    }
-
     public NewsDocument(String source, File newsFile, SourceParser sourceParser) throws IOException, ParseException {
         this.source = source;
+
         String newsStr = FileUtils.readFileToString(newsFile);
 
-        int newLineInd = newsStr.indexOf('\n');
-        String title = newsStr.substring(0, newLineInd);
+        int urlEndInd = newsStr.indexOf('\n');
+        url = newsStr.substring(0, urlEndInd);
 
-        int dateLineInd = newsStr.indexOf('\n', newLineInd + 1);
-        date = loadDate(newsStr.substring(newLineInd + 1, dateLineInd));
+        int titleEndInd = newsStr.indexOf('\n', urlEndInd + 1);
+        title = newsStr.substring(urlEndInd + 1, titleEndInd);
 
+        int dateEndInd = newsStr.indexOf('\n', titleEndInd + 1);
+        date = loadDate(newsStr.substring(titleEndInd + 1, dateEndInd));
 
-        String content = newsStr.substring(dateLineInd + 1);
-        loadNewsDocument(title, Jsoup.parse(content), sourceParser);
+        String content = newsStr.substring(dateEndInd + 1);
+        loadNewsDocument(Jsoup.parse(content), sourceParser);
     }
 
     private Date loadDate(String dateStr) throws ParseException {
         return DATE_FORMAT.parse(dateStr);
     }
 
-    void loadNewsDocument(String title, Document doc, SourceParser sourceParser) {
-        setTitle(title);
+    void loadNewsDocument(Document doc, SourceParser sourceParser) {
         //doc.select("a").remove();
         this.content = sourceParser.getContent(doc);
         wordsOccurrences = DocumentPreparer.parseContent(content + "\n" + title);
@@ -139,4 +136,5 @@ public class NewsDocument {
         title = CharMatcher.INVISIBLE.replaceFrom(title, " ");
         this.title = title;
     }
+
 }

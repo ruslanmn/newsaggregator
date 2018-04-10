@@ -1,7 +1,20 @@
 package application;
 
 import datastructures.ClusterModel;
+import datastructures.ItemModel;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import lombok.Setter;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * View-Controller for the person table.
@@ -10,6 +23,11 @@ import lombok.Setter;
  */
 public class ClusterTableController {
 
+    @FXML
+    public TableView clusterTableView;
+    @FXML
+    public Label clusterNameLabel;
+
     @Setter
     private PageManager pageManager;
 
@@ -17,6 +35,49 @@ public class ClusterTableController {
 
     public void updatePage(ClusterModel clusterModel) {
         this.clusterModel = clusterModel;
+        clusterTableView.setItems(FXCollections.observableArrayList(clusterModel.getItemModels()));
+        clusterNameLabel.setText(clusterModel.getName());
+        System.out.println(clusterModel.getItemModels());
+    }
+
+    @FXML
+    private void initialize() {
+        TableColumn<ItemModel, Double> distanceColumn = new TableColumn<>("Дистанция");
+        TableColumn<ItemModel, java.util.Date> dateColumn = new TableColumn<>("Дата");
+        TableColumn<ItemModel, String> titleColumn = new TableColumn<>("Заголовок");
+        TableColumn<ItemModel, String> sourceColumn = new TableColumn<>("Источник");
+
+        clusterTableView.getColumns().add(distanceColumn);
+        clusterTableView.getColumns().add(dateColumn);
+        clusterTableView.getColumns().add(titleColumn);
+        clusterTableView.getColumns().add(sourceColumn);
+
+        distanceColumn.prefWidthProperty().bind(
+                clusterTableView.widthProperty().multiply(0.10)); // 10% width
+        //dateColumn.prefWidthProperty().bind(
+                //clusterTableView.widthProperty().multiply(0.15)); // 15% width
+        titleColumn.prefWidthProperty().bind(
+                clusterTableView.widthProperty().multiply(0.50)); // 10% width
+        sourceColumn.prefWidthProperty().bind(
+                clusterTableView.widthProperty().multiply(0.25)); // 10% width
+
+        distanceColumn.setCellValueFactory(new PropertyValueFactory<>("distance"));
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        sourceColumn.setCellValueFactory(new PropertyValueFactory<>("source"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        dateColumn.setCellFactory(tableColumn -> new TableCell<ItemModel, Date>() {
+            @Override
+            protected void updateItem(Date date, boolean empty) {
+                super.updateItem(date, empty);
+                setText(empty ? null : new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(date));
+            }
+        });
+    }
+
+    public void backButtonPressed(MouseEvent mouseEvent) {
+        if (MouseButton.PRIMARY.equals(mouseEvent.getButton())) {
+            pageManager.changeToClustersPage();
+        }
     }
 
 /*

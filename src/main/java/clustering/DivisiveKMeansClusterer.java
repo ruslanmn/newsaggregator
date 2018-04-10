@@ -58,7 +58,8 @@ public class DivisiveKMeansClusterer {
                 double dist = kMeansPP.getDistanceMeasure().compute(point.getPoint(), centroid.getCenter().getPoint());
                 rss += dist*dist;
                 NewsDocument doc = point.getDocument();
-                ItemModel clusterItem = new ItemModel(doc.getTitle(), doc.getSource(), doc.getDate(), dist);
+                ItemModel clusterItem = new ItemModel(doc.getTitle(), doc.getSource(), doc.getDate(), dist, doc.getUrl()
+                );
                 clusterItems.add(clusterItem);
             }
 

@@ -37,7 +37,7 @@ public class ClusteringResult {
             name.setTextContent(clusterModel.getName());
 
             for(ItemModel item : performClustering.getItemModels())
-                pw.println("        <item dist = " + formatter.format(item.getDistanceFromCentroid()) + ">" + item.getNewsDocument().getTitle() + "</item>");
+                pw.println("        <item dist = " + formatter.format(item.getDistance()) + ">" + item.getNewsDocument().getTitle() + "</item>");
         }
 
     }*/
