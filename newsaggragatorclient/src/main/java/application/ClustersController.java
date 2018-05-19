@@ -8,18 +8,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import lombok.Setter;
 
-import java.util.Date;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ClustersController implements Runnable {
@@ -28,19 +26,12 @@ public class ClustersController implements Runnable {
     private PageManager pageManager;
 
     @FXML
-    public Spinner<Integer> clusterSizeSpinner;
-    @FXML
-    public TextField clusteringErrorTextField;
-    @FXML
     public Button refreshButton;
     @FXML
     ListView<String> clusterListView;
 
 
     List<ClusterModel> clusters;
-
-    private static int clusterSize = 20;
-    private static int tagSize = 10;
 
     private boolean clustering;
 
@@ -99,9 +90,6 @@ public class ClustersController implements Runnable {
                 clusterListView.getItems().add(clusterModel.getName());
             }
 
-            clusteringErrorTextField.setText(formatter.format(clusteringResult.getRss()) + " for "
-            + clusters.size() + " clusters");
-
             refreshButton.setText(ButtonModes.ready);
             clustering = false;
             refreshButton.setDisable(false);
@@ -159,7 +147,7 @@ public class ClustersController implements Runnable {
 
     private void handleItemSelection() {
         int ind = clusterListView.getSelectionModel().getSelectedIndex();
-        pageManager.changeToClusterTablePage(clusters.get(ind));
+        pageManager.changeToClusterTablePage(clusters.get(ind), ind != 0);
         System.out.println(clusterListView.getSelectionModel().getSelectedItem());
     }
 
@@ -206,8 +194,8 @@ public class ClustersController implements Runnable {
     }*/
 
     static class ButtonModes {
-        public static final String clustering = "Кластеризируем...";
-        public static final String ready = "Кластеризировать";
+        public static final String clustering = "Обновление...";
+        public static final String ready = "Обновить";
     }
 
 

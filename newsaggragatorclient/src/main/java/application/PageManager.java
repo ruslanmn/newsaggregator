@@ -50,13 +50,24 @@ public class PageManager {
     }
 
 
-    public void changeToClusterTablePage(ClusterModel clusterModel) {
-        clusterTableController.updatePage(clusterModel);
+    public void changeToClusterTablePage(ClusterModel clusterModel, boolean showDistance) {
+        clusterTableController.updatePage(clusterModel, showDistance);
         scene.setRoot(clusterTablePage);
     }
 
     public ClusteringResult getClusters() {
-        return clusteringWebService.getClusters();
+        ClusteringResult clusteringResult = clusteringWebService.getClusters();
+
+        ClusterModel allNews = new ClusterModel();
+        for(ClusterModel cluster : clusteringResult.getClusters()) {
+            allNews.getItemModels().addAll(cluster.getItemModels());
+        }
+
+        allNews.setName("Все Новости");
+
+        clusteringResult.getClusters().add(0, allNews);
+
+        return clusteringResult;
     }
 
     public void changeToClustersPage() {

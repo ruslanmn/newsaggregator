@@ -8,10 +8,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.text.ParseException;
 
-
 public class NewsAggregatorApp extends Application {
 
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, ParseException {
+        /*Date d = Calendar.getInstance().getTime();
+        SimpleDateFormat smp = new SimpleDateFormat();
+        smp.setTimeZone(TimeZone.getTimeZone("GMT"));
+        System.out.println(smp.format(d));*/
         launch(args);
     }
 

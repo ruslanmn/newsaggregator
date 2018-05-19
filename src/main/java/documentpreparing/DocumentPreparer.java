@@ -5,7 +5,13 @@ import org.apache.commons.collections4.multiset.HashMultiSet;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class DocumentPreparer {
+    private static final Set<String> forbiddenFilter = new HashSet<>(
+            Arrays.asList("nbsp"));
 
     /*public static boolean verifyChar(char c) {
         return ((c >= 'a') && (c <= 'z')) ||
@@ -48,7 +54,9 @@ public class DocumentPreparer {
         for(String word : content.split("[^a-zA-Zа-яА-Я0-9]")) {
             if(!word.isEmpty()) {
                 word = prepareWord(word);
-                wordsOccurrences.add(word);
+                if(!forbiddenFilter.contains(word)) {
+                    wordsOccurrences.add(word);
+                }
             }
         }
 

@@ -3,16 +3,24 @@ package application;
 import datastructures.ClusterModel;
 import datastructures.ItemModel;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseButton;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,25 +32,43 @@ import java.util.Date;
 public class ClusterTableController {
 
     @FXML
-    public TableView clusterTableView;
+    public TableView<ItemModel> clusterTableView;
     @FXML
-    public Label clusterNameLabel;
+    public TextField titleFilterTextField;
 
     @Setter
     private PageManager pageManager;
 
+    private FilteredList<ItemModel> items;
+    private SortedList<ItemModel> sortableWrappedItems;
+    private TableColumn<ItemModel, Double> distanceColumn;
+
     private ClusterModel clusterModel;
 
-    public void updatePage(ClusterModel clusterModel) {
+    public void updatePage(ClusterModel clusterModel, boolean showDistance) {
+        titleFilterTextField.setText(StringUtils.EMPTY);
+
         this.clusterModel = clusterModel;
-        clusterTableView.setItems(FXCollections.observableArrayList(clusterModel.getItemModels()));
-        clusterNameLabel.setText(clusterModel.getName());
-        System.out.println(clusterModel.getItemModels());
+        items = new FilteredList<>(FXCollections.observableArrayList(clusterModel.getItemModels()), item -> true);
+
+        sortableWrappedItems = new SortedList<>(items);
+        clusterTableView.setItems(sortableWrappedItems);
+        sortableWrappedItems.comparatorProperty().bind(clusterTableView.comparatorProperty());
+
+        ObservableList<TableColumn<ItemModel, ?>> columns = clusterTableView.getColumns();
+
+        if (columns.contains(distanceColumn) && !showDistance) {
+            columns.remove(distanceColumn);
+        } else if (!columns.contains(distanceColumn) && showDistance) {
+            columns.add(0, distanceColumn);
+        }
+
+        clusterTableView.scrollTo(0);
     }
 
     @FXML
     private void initialize() {
-        TableColumn<ItemModel, Double> distanceColumn = new TableColumn<>("Дистанция");
+        distanceColumn = new TableColumn<>("Дистанция");
         TableColumn<ItemModel, java.util.Date> dateColumn = new TableColumn<>("Дата");
         TableColumn<ItemModel, String> titleColumn = new TableColumn<>("Заголовок");
         TableColumn<ItemModel, String> sourceColumn = new TableColumn<>("Источник");
@@ -51,15 +77,6 @@ public class ClusterTableController {
         clusterTableView.getColumns().add(dateColumn);
         clusterTableView.getColumns().add(titleColumn);
         clusterTableView.getColumns().add(sourceColumn);
-
-        distanceColumn.prefWidthProperty().bind(
-                clusterTableView.widthProperty().multiply(0.10)); // 10% width
-        //dateColumn.prefWidthProperty().bind(
-                //clusterTableView.widthProperty().multiply(0.15)); // 15% width
-        titleColumn.prefWidthProperty().bind(
-                clusterTableView.widthProperty().multiply(0.50)); // 10% width
-        sourceColumn.prefWidthProperty().bind(
-                clusterTableView.widthProperty().multiply(0.25)); // 10% width
 
         distanceColumn.setCellValueFactory(new PropertyValueFactory<>("distance"));
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -72,12 +89,75 @@ public class ClusterTableController {
                 setText(empty ? null : new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(date));
             }
         });
+
+        clusterTableView.setRowFactory( tv -> {
+            TableRow<ItemModel> row = new TableRow<>();
+            row.setOnMouseClicked(this::onMouseClick);
+            return row ;
+        });
+
+
+        titleFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            items.setPredicate(item -> {
+                if (StringUtils.isEmpty(newValue))
+                    return true;
+                return item == null ? false : item.getTitle().toLowerCase().contains(newValue.toLowerCase());
+            });
+
+        //clusterTableView.setItems(sortableWrappedItems);
+        });
     }
 
-    public void backButtonPressed(MouseEvent mouseEvent) {
-        if (MouseButton.PRIMARY.equals(mouseEvent.getButton())) {
-            pageManager.changeToClustersPage();
+
+
+
+
+    public static boolean openWebpage(String url) throws URISyntaxException {
+        URI uri = new URI(url);
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                new Thread(() -> {
+                    try {
+                        desktop.browse(uri);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }).start();
+
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+        return false;
+    }
+
+    public void onMouseClick(MouseEvent mouseEvent) {
+        if (mouseEvent.getClickCount() == 2) {
+            try {
+                handleItemChoose();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void onKeyPressed(KeyEvent keyEvent) throws URISyntaxException {
+        if(KeyCode.ENTER.equals(keyEvent.getCode())) {
+            handleItemChoose();
+        }
+    }
+
+    private void handleItemChoose() throws URISyntaxException {
+        ItemModel itemModel = clusterTableView.getSelectionModel().getSelectedItem();
+        if(itemModel != null) {
+            openWebpage(itemModel.getUrl());
+        }
+    }
+
+    public void backButtonPressed(ActionEvent actionEvent) {
+        pageManager.changeToClustersPage();
     }
 
 /*

@@ -1,12 +1,12 @@
 package documentprocessing;
 
+import clustering.AngularDistanceMeasure;
 import clustering.KMeansClusterer;
 import documentprocessing.datastructures.ClusteringResult;
 import documentsdatastructures.InvertedIndex;
 import documentsdatastructures.InvertedIndexVectorizer;
 import documentsdatastructures.NewsDocument;
 import documentsdatastructures.VectorizedDocuments;
-import org.apache.commons.math3.ml.distance.EuclideanDistance;
 
 import java.util.List;
 
@@ -14,22 +14,22 @@ public class DocumentProcessor {
 
     private static final int TITLE_NAME_SIZE = 10;
 
-    InvertedIndex invertedIndex;
+    InvertedIndex fullInvertedIndex;
     KMeansClusterer kMeansClusterer;
+    VectorizedDocuments vectorizedDocuments;
 
 
     public DocumentProcessor() {
-        invertedIndex = new InvertedIndex();
-        kMeansClusterer = new KMeansClusterer(new EuclideanDistance());
+        fullInvertedIndex = new InvertedIndex();
+        kMeansClusterer = new KMeansClusterer(new AngularDistanceMeasure());
     }
 
     public List<SearchResultItem> search(String query, int size) {
-        return invertedIndex.search(query, size);
+        return fullInvertedIndex.search(query, size);
     }
 
     public ClusteringResult performClustering(int clusterSize) {
-        VectorizedDocuments vectorizedDocuments = InvertedIndexVectorizer.vectorize(invertedIndex);
-        int numTrials = 1;
+         int numTrials = 1;
 
         ClusteringResult bestClusteringResult;
         int cs = clusterSize;//20;
@@ -70,14 +70,16 @@ public class DocumentProcessor {
     }
 
     public void addAll(List<NewsDocument> newsDocuments) {
-        invertedIndex.addAll(newsDocuments);
+        fullInvertedIndex.addAll(newsDocuments);
     }
 
     public void finish() {
-        invertedIndex.normalizeDocuments();
+        fullInvertedIndex.normalizeDocuments();
+        vectorizedDocuments = InvertedIndexVectorizer.vectorize(fullInvertedIndex);
+
     }
 
-    public InvertedIndex getInvertedIndex() {
-        return invertedIndex;
+    public InvertedIndex getFullInvertedIndex() {
+        return fullInvertedIndex;
     }
 }

@@ -15,6 +15,7 @@ import java.util.List;
 public class ServerStart {
 
     public static DocumentProcessor documentProcessor;
+    private static int CLUSTER_SIZE = 15;
 
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, InterruptedException, ParseException {
 
@@ -25,7 +26,7 @@ public class ServerStart {
         documentProcessor.finish();
 
         System.out.println("Clustering...");
-        ClusteringResult clusteringResult = ServerStart.documentProcessor.performClustering(10);
+        ClusteringResult clusteringResult = ServerStart.documentProcessor.performClustering(CLUSTER_SIZE);
         ClusteringWebServiceImpl clusteringWebService = new ClusteringWebServiceImpl();
         clusteringWebService.clusteringResult = clusteringResult;
 

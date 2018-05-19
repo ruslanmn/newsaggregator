@@ -13,10 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class DocumentLoader {
@@ -71,19 +68,37 @@ public class DocumentLoader {
 
 
     public static List<NewsDocument> loadNewsDocuments() throws IOException, ParserConfigurationException, SAXException, ParseException {
-        File[] sources = new File(ConfigLoader.DOCUMENTS_DIR_PATH).listFiles(File::isDirectory);
+        //File[] sources = new File(ConfigLoader.DOCUMENTS_DIR_PATH).listFiles(File::isDirectory);
 
         List<NewsDocument> newsDocuments = new LinkedList<>();
 
+        Calendar calendar  = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -1);
+        Date lastMonth = calendar.getTime();
+
         for(Source source : ConfigLoader.loadUrls()) {
+            String dir = ConfigLoader.DOCUMENTS_DIR_PATH + "/" + source.getId();
+
             SourceParser sourceParser = SourceParserFactory.get(source);
-            File sourceFile = new File(ConfigLoader.DOCUMENTS_DIR_PATH + "/" + source.getId());
-            for(File newsFile : sourceFile.listFiles(File::isFile)) {
-                if(!ConfigLoader.NEWS_LIST_FILENAME.equals(newsFile.getName()))
-                    newsDocuments.add(new NewsDocument(source.getUrl(), newsFile, sourceParser));
+            File sourceFile = new File(dir);
+
+            File[] newsFiles = sourceFile.listFiles(File::isFile);
+            ArrayList<String> loadedTitles = new ArrayList<>(newsFiles.length);
+            for(File newsFile : newsFiles) {
+                if(!ConfigLoader.NEWS_LIST_FILENAME.equals(newsFile.getName())) {
+                    NewsDocument newsDocument = new NewsDocument(source.getUrl(), newsFile, sourceParser);
+                    if (newsDocument.getDate().before(lastMonth)) {
+                        newsFile.delete();
+                    } else {
+                        newsDocuments.add(newsDocument);
+                        loadedTitles.add(newsDocument.getTitle());
+                    }
+                }
             }
+            FileUtils.writeLines(new File(dir + "/" + ConfigLoader.NEWS_LIST_FILENAME), loadedTitles);
         }
 
         return newsDocuments;
+
     }
 }
