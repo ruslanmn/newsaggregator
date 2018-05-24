@@ -24,12 +24,12 @@ public class DocumentProcessor {
         kMeansClusterer = new KMeansClusterer(new AngularDistanceMeasure());
     }
 
-    public List<SearchResultItem> search(String query, int size) {
+    /*public List<SearchResultItem> search(String query, int size) {
         return fullInvertedIndex.search(query, size);
-    }
+    }*/
 
     public ClusteringResult performClustering(int clusterSize) {
-         int numTrials = 1;
+         int numTrials = 5;
 
         ClusteringResult bestClusteringResult;
         int cs = clusterSize;//20;
@@ -79,7 +79,7 @@ public class DocumentProcessor {
 
     }
 
-    public InvertedIndex getFullInvertedIndex() {
+    /*public InvertedIndex getFullInvertedIndex() {
         return fullInvertedIndex;
-    }
+    }*/
 }

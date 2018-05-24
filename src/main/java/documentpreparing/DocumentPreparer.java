@@ -54,7 +54,7 @@ public class DocumentPreparer {
         for(String word : content.split("[^a-zA-Zа-яА-Я0-9]")) {
             if(!word.isEmpty()) {
                 word = prepareWord(word);
-                if(!forbiddenFilter.contains(word)) {
+                if(word.length() > 2 && !forbiddenFilter.contains(word)) {
                     wordsOccurrences.add(word);
                 }
             }

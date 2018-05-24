@@ -63,8 +63,8 @@ public class KMeansClusterer {
 
                 docs.add(clusterItem);
 
-                double euclidDist = euclideanDistance.compute(centroid, point);
-                rss += euclidDist * euclidDist;
+                double euclidDist = distanceMeasure.compute(centroid, point);
+                rss += euclidDist;// * euclidDist;
             }
 
             Collections.sort(docs, clusterResultItemComparator);

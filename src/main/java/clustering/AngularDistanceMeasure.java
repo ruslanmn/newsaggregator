@@ -9,10 +9,10 @@ public class AngularDistanceMeasure implements DistanceMeasure {
     public double compute(double[] a, double[] b) throws DimensionMismatchException {
         MathArrays.checkEqualLength(a, b);
 
-        double cosineSimilarity = 0;
+        double similarity = 0;
         for(int i = 0; i < a.length; i++)
-            cosineSimilarity += a[i] * b[i];
+            similarity += a[i] * b[i];
 
-        return 2 / cosineSimilarity / Math.PI;
+        return 1 / similarity;//2 * Math.acos(similarity) / Math.PI;
     }
 }
