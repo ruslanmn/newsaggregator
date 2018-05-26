@@ -7,6 +7,7 @@ import org.jsoup.safety.Whitelist;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class DocumentPreparer {
@@ -47,15 +48,19 @@ public class DocumentPreparer {
     }
 
 
-    public static MultiSet<String> parseContent(String content) {
+    public static MultiSet<String> parseContent(String content, Map<String, String> termsToWords) {
         MultiSet<String> wordsOccurrences = new HashMultiSet<>();
 
         content = prepare(Jsoup.clean(content, Whitelist.none()));
         for(String word : content.split("[^a-zA-Zа-яА-Я0-9]")) {
             if(!word.isEmpty()) {
-                word = prepareWord(word);
-                if(word.length() > 2 && !forbiddenFilter.contains(word)) {
-                    wordsOccurrences.add(word);
+                String term = prepareWord(word);
+                if(term.length() > 2 && !forbiddenFilter.contains(term)) {
+                    wordsOccurrences.add(term);
+                }
+
+                if(!termsToWords.containsKey(term) || word.equals(termsToWords.get(term).toLowerCase())) {
+                    termsToWords.put(term, word);
                 }
             }
         }

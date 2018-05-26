@@ -38,7 +38,8 @@ public class KMeansClusterer {
 
 
     public ClusteringResult performClustering(List<DocumentVector> points, int clustersSize, int numTrials,
-                                              int titleNameSize, Map<String, Integer> termsSpaceMap)  {
+                                              int titleNameSize, Map<String, Integer> termsSpaceMap,
+                                              Map<String, String> termsToWords)  {
         List<ClusterModel> clusters = new ArrayList<>(clustersSize);
 
         KMeansPlusPlusClusterer<DocumentVector> kMeansPPSingle = new KMeansPlusPlusClusterer<DocumentVector>(clustersSize, -1, distanceMeasure);
@@ -71,7 +72,7 @@ public class KMeansClusterer {
 
             ClusterModel model = new ClusterModel();
             model.setItemModels(docs);
-            model.setName(generateName(centroid, termsSpaceMap, titleNameSize));
+            model.setName(generateName(centroid, termsSpaceMap, termsToWords, titleNameSize));
             clusters.add(model);
         }
 
@@ -79,9 +80,7 @@ public class KMeansClusterer {
     }
 
 
-    private String generateName(double[] centroid, Map<String, Integer> termsSpaceMap, int titleNameSize) {
-        ArrayList<String> spaceMap = new ArrayList<>(termsSpaceMap.size());
-
+    private String generateName(double[] centroid, Map<String, Integer> termsSpaceMap, Map<String, String> termsToWords, int titleNameSize) {
         PriorityQueue<String> termsTop = new PriorityQueue<>((o1, o2) -> {
             int i1 = termsSpaceMap.get(o1);
             int i2 = termsSpaceMap.get(o2);
@@ -97,13 +96,12 @@ public class KMeansClusterer {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        String term = termsTop.poll();
-        stringBuilder.append(" ").append(term);
-        //.append("[").append(formatter.format(centroid[termsSpaceMap.get(term)])).append("]");
 
-        for(int i = 1; i < titleNameSize; i++) {
-            term = termsTop.poll();
-            stringBuilder.append(" ").append(term);
+        //.append("[").append(formatter.format(centroid[termsSpaceMap.get(term)])).append("]");
+        for(int i = 0; i < titleNameSize; i++) {
+            String term = termsTop.poll();
+            String word = termsToWords.get(term);
+            stringBuilder.append(" ").append(word);
             //.append("[").append(formatter.format(centroid[termsSpaceMap.get(term)])).append("]");
         }
 

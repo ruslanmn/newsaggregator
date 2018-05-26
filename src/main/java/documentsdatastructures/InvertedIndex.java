@@ -35,9 +35,9 @@ public class InvertedIndex {
 
     public void add(NewsDocument document) {
         if(usedTitles.add(document.getTitle())) {
-            if(document.getTitle().contains("Хирурга")) {
+            /*if(document.getTitle().contains("Хирурга")) {
                 System.out.print(document.getTitle());
-            }
+            }*/
             System.out.println(document.getTitle() + " added to inverted index");
             documents.add(document);
             for (String term : document.getWords()) {
@@ -86,7 +86,7 @@ public class InvertedIndex {
         int documentsSize = documents.size();
         if(resultSize == 0)
             resultSize = documentsSize;
-        MultiSet<String> queryTerms = DocumentPreparer.parseContent(query);
+        MultiSet<String> queryTerms = DocumentPreparer.parseContent(query, new HashMap<>());
 
         HashMap<NewsDocument, Double> scores = new HashMap<>();
 

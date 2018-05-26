@@ -48,7 +48,7 @@ public class NewsDocument {
             "\u2000","\u2001", "\u2002", "\u2003", "\u2004", "\u2005", "\u2006",
             "\u2007", "\u2008", "\u2009", "\u200a"};
 
-    public NewsDocument(String source, File newsFile, SourceParser sourceParser) throws IOException, ParseException {
+    public NewsDocument(String source, File newsFile, SourceParser sourceParser, Map<String, String> termsToWords) throws IOException, ParseException {
         this.source = source;
 
         String newsStr = FileUtils.readFileToString(newsFile);
@@ -63,17 +63,17 @@ public class NewsDocument {
         date = loadDate(newsStr.substring(titleEndInd + 1, dateEndInd));
 
         String content = newsStr.substring(dateEndInd + 1);
-        loadNewsDocument(Jsoup.parse(content), sourceParser);
+        loadNewsDocument(Jsoup.parse(content), sourceParser, termsToWords);
     }
 
     private Date loadDate(String dateStr) throws ParseException {
         return DATE_FORMAT.parse(dateStr);
     }
 
-    void loadNewsDocument(Document doc, SourceParser sourceParser) {
+    void loadNewsDocument(Document doc, SourceParser sourceParser, Map<String, String> termsToWords) {
         //doc.select("a").remove();
         this.content = sourceParser.getContent(doc);
-        wordsOccurrences = DocumentPreparer.parseContent(content + "\n" + title);
+        wordsOccurrences = DocumentPreparer.parseContent(content + "\n" + title, termsToWords);
     }
 
     void normalize(InvertedIndex invertedIndex) {

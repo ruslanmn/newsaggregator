@@ -8,7 +8,9 @@ import documentsdatastructures.InvertedIndexVectorizer;
 import documentsdatastructures.NewsDocument;
 import documentsdatastructures.VectorizedDocuments;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DocumentProcessor {
 
@@ -18,8 +20,11 @@ public class DocumentProcessor {
     KMeansClusterer kMeansClusterer;
     VectorizedDocuments vectorizedDocuments;
 
+    Map<String, String> termsToWords;
+
 
     public DocumentProcessor() {
+        termsToWords = new HashMap<>();
         fullInvertedIndex = new InvertedIndex();
         kMeansClusterer = new KMeansClusterer(new AngularDistanceMeasure());
     }
@@ -37,7 +42,7 @@ public class DocumentProcessor {
             cs = clusterSize;
 
         bestClusteringResult = kMeansClusterer.performClustering(vectorizedDocuments.getDocumentVectors(), cs, numTrials,
-                TITLE_NAME_SIZE, vectorizedDocuments.getTermsSpaceMap());
+                TITLE_NAME_SIZE, vectorizedDocuments.getTermsSpaceMap(), termsToWords);
         double minRss = bestClusteringResult.getRss();
 
        /* FileWriter fw = null;
@@ -69,7 +74,8 @@ public class DocumentProcessor {
         return bestClusteringResult;
     }
 
-    public void addAll(List<NewsDocument> newsDocuments) {
+    public void addAll(List<NewsDocument> newsDocuments, Map<String, String> termsToWords) {
+        this.termsToWords.putAll(termsToWords);
         fullInvertedIndex.addAll(newsDocuments);
     }
 

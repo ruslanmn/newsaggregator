@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 public class DocumentLoader {
 
-    public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
+    public static void loadNewsFromSources() throws IOException, ParserConfigurationException, SAXException {
         long start = System.nanoTime();
         RssParser rssParser = RssParser.getInstance();
         List<Source> sources = ConfigLoader.loadUrls();
@@ -67,7 +67,7 @@ public class DocumentLoader {
     }
 
 
-    public static List<NewsDocument> loadNewsDocuments() throws IOException, ParserConfigurationException, SAXException, ParseException {
+    public static List<NewsDocument> loadNewsDocuments(Map<String, String> termsToWords) throws IOException, ParserConfigurationException, SAXException, ParseException {
         //File[] sources = new File(ConfigLoader.DOCUMENTS_DIR_PATH).listFiles(File::isDirectory);
 
         List<NewsDocument> newsDocuments = new LinkedList<>();
@@ -86,7 +86,7 @@ public class DocumentLoader {
             ArrayList<String> loadedTitles = new ArrayList<>(newsFiles.length);
             for(File newsFile : newsFiles) {
                 if(!ConfigLoader.NEWS_LIST_FILENAME.equals(newsFile.getName())) {
-                    NewsDocument newsDocument = new NewsDocument(source.getUrl(), newsFile, sourceParser);
+                    NewsDocument newsDocument = new NewsDocument(source.getUrl(), newsFile, sourceParser, termsToWords);
                     if (newsDocument.getDate().before(lastMonth)) {
                         newsFile.delete();
                     } else {

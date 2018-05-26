@@ -11,6 +11,7 @@ import server.ClusteringWebService;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class PageManager {
@@ -30,11 +31,14 @@ public class PageManager {
     private ClusterTableController clusterTableController;
 
     public PageManager() throws IOException {
-        URL wsdlURL = new URL("http://localhost:8888/newsaggregator");
-        QName qname = new QName("http://server/", "ClusteringWebServiceImplService");
-        Service service = Service.create(wsdlURL, qname);
-        clusteringWebService = service.getPort(ClusteringWebService.class);
-
+        try {
+            clusteringWebService = loadService();
+        } finally {
+            if(clusteringWebService == null) {
+                System.out.println("Error was occured");
+                System.exit(0);
+            }
+        }
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource(CLUSTERS_PAGE_FXML));
 
         clustersPage = fxmlLoader.load();
@@ -47,6 +51,13 @@ public class PageManager {
         clusterTableController.setPageManager(this);
 
         scene = new Scene(clustersPage);
+    }
+
+    private ClusteringWebService loadService() throws MalformedURLException {
+        URL wsdlURL = new URL("http://localhost:8888/newsaggregator");
+        QName qname = new QName("http://server/", "ClusteringWebServiceImplService");
+        Service service = Service.create(wsdlURL, qname);
+        return service.getPort(ClusteringWebService.class);
     }
 
 
