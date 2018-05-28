@@ -13,6 +13,6 @@ public class AngularDistanceMeasure implements DistanceMeasure {
         for(int i = 0; i < a.length; i++)
             similarity += a[i] * b[i];
 
-        return 1 / similarity;//2 * Math.acos(similarity) / Math.PI;
+        return Math.acos(similarity) / Math.PI;
     }
 }

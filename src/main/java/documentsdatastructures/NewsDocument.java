@@ -95,8 +95,8 @@ public class NewsDocument {
             double wf = tf > 0 ? 1 + Math.log(tf) : 0;
             //double wf = tf;
             double val = wf * idf;
-            //val = termEntry.getCount() == 0 ? 0 : 1.0;
-            //val =  tf;
+            val = termEntry.getCount() == 0 ? 0 : 1.0;
+           // val =  tf;
 
             //SETTING VECTOR VALUES
             normalizedTerms.put(term ,val);

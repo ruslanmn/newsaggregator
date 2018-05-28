@@ -43,7 +43,7 @@ public class DocumentProcessor {
 
         bestClusteringResult = kMeansClusterer.performClustering(vectorizedDocuments.getDocumentVectors(), cs, numTrials,
                 TITLE_NAME_SIZE, vectorizedDocuments.getTermsSpaceMap(), termsToWords);
-        double minRss = bestClusteringResult.getRss();
+        //double minRss = bestClusteringResult.getRss();
 
        /* FileWriter fw = null;
         try {

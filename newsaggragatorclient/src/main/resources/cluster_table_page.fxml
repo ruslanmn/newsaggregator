@@ -8,7 +8,7 @@
    <children>
 
        <Button onAction="#backButtonPressed"
-               text="Back" AnchorPane.leftAnchor="20"
+               text="Назад" AnchorPane.leftAnchor="20"
                AnchorPane.topAnchor="10" />
 
        <TextField fx:id="titleFilterTextField"

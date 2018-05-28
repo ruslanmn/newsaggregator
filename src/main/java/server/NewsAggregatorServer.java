@@ -25,12 +25,14 @@ public class NewsAggregatorServer {
 
         ClusteringWebServiceImpl clusteringWebService = new ClusteringWebServiceImpl();
         clusteringWebService.setClusteringResult(updateDataAndReclusterize());
+        System.out.println("Updated");
+
         Endpoint.publish(url, clusteringWebService);
 
         while(true) {
             Thread.sleep(TimeUnit.HOURS.toMillis(8));
             clusteringWebService.setClusteringResult(updateDataAndReclusterize());
-            System.out.println("Updated");
+
         }
     }
 
@@ -41,7 +43,7 @@ public class NewsAggregatorServer {
 
     public ClusteringResult updateDataAndReclusterize() throws ParserConfigurationException, SAXException, IOException, ParseException {
         System.out.println("Loading news...");
-        DocumentLoader.loadNewsFromSources();
+        //DocumentLoader.loadNewsFromSources();
 
         System.out.println("Loading vectors...");
         DocumentProcessor documentProcessor = new DocumentProcessor();

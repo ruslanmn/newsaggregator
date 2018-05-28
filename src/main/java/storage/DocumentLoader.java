@@ -73,7 +73,7 @@ public class DocumentLoader {
         List<NewsDocument> newsDocuments = new LinkedList<>();
 
         Calendar calendar  = Calendar.getInstance();
-        calendar.add(Calendar.MONTH, -1);
+        calendar.add(Calendar.DATE, -30);
         Date lastMonth = calendar.getTime();
 
         for(Source source : ConfigLoader.loadUrls()) {
@@ -87,7 +87,7 @@ public class DocumentLoader {
             for(File newsFile : newsFiles) {
                 if(!ConfigLoader.NEWS_LIST_FILENAME.equals(newsFile.getName())) {
                     NewsDocument newsDocument = new NewsDocument(source.getUrl(), newsFile, sourceParser, termsToWords);
-                    if (newsDocument.getDate().before(lastMonth)) {
+                    if (false) {//newsDocument.getDate().before(lastMonth)) {
                         newsFile.delete();
                     } else {
                         newsDocuments.add(newsDocument);
